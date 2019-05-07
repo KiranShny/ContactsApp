@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -30,6 +29,7 @@ public class ContactDetailController extends Controller {
     private TextView name, phone;
     private ImageView mContactPicture;
     private RelativeLayout mCallLayout;
+    private ImageView backImage;
     private String displayName;
     private String phoneNumber;
 
@@ -61,6 +61,9 @@ public class ContactDetailController extends Controller {
                 .buildRound(displayName.substring(0,1), generator.getRandomColor());
         mContactPicture.setImageDrawable(drawable);
 
+        TextView name = view.findViewById(R.id.tv_contact_detail_name);
+        TextView phone = view.findViewById(R.id.tv_contact_detail_number);
+        backImage=view.findViewById(R.id.img_back_button);
         name.setText(displayName);
         phone.setText(phoneNumber);
 
@@ -70,6 +73,13 @@ public class ContactDetailController extends Controller {
                 Intent callIntent = new Intent(Intent.ACTION_CALL);
                 callIntent.setData(Uri.parse("tel:" + phoneNumber));
                 startActivity(callIntent);
+            }
+        });
+
+        backImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getRouter().popToRoot();
             }
         });
         return view;

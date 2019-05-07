@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bluelinelabs.conductor.Controller;
 import com.bluelinelabs.conductor.RouterTransaction;
-import com.bluelinelabs.conductor.changehandler.HorizontalChangeHandler;
+import com.bluelinelabs.conductor.changehandler.FadeChangeHandler;
 import com.gonuclei.contacts.R;
 import com.gonuclei.contacts.adapter.ContactAdapter;
 import com.gonuclei.contacts.model.Contact;
@@ -26,32 +26,40 @@ import java.util.List;
 
 public class ContactActivityController extends Controller implements ContactAdapter.RecyclerViewClickListener {
     private static final int REQUEST_READ_CONTACTS = 79;
-    private List<Contact> mobileArray;
+    private static List<Contact> mobileArray;
 
     @NonNull
     @Override
     protected View onCreateView(@NonNull LayoutInflater inflater, @NonNull ViewGroup container) {
         View view = inflater.inflate(R.layout.controller_main, container, false);
+        RecyclerView contactsRecyclerView = view.findViewById(R.id.rv_contacts);
         FloatingActionButton fab = view.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                getRouter().pushController(RouterTransaction.with(
+                        new ContactAddController())
+                        .pushChangeHandler(new FadeChangeHandler())
+                        .popChangeHandler(new FadeChangeHandler()));
             }
         });
 
         if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.READ_CONTACTS)
                 == PackageManager.PERMISSION_GRANTED) {
-            mobileArray = getAllContacts();
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    mobileArray = getAllContacts();
+                }
+            };
+            runnable.run();
         } else {
             requestPermission();
         }
 
-
-        RecyclerView contactsRecyclerView = view.findViewById(R.id.rv_contacts);
+        ContactAdapter contactAdapter = new ContactAdapter(getActivity(), mobileArray, this);
         contactsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        contactsRecyclerView.setAdapter(new ContactAdapter(getActivity(), mobileArray, this));
-
+        contactsRecyclerView.setAdapter(contactAdapter);
         return view;
     }
 
@@ -88,7 +96,7 @@ public class ContactActivityController extends Controller implements ContactAdap
     }
 
     private List<Contact> getAllContacts() {
-         mobileArray=new ArrayList<>();
+        List<Contact> contactList = new ArrayList<>();
         ContentResolver cr = getApplicationContext().getContentResolver();
         Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI,
                 null, null, null, null);
@@ -112,7 +120,7 @@ public class ContactActivityController extends Controller implements ContactAdap
                                 ContactsContract.CommonDataKinds.Phone.NUMBER));
                         contact.setPhoneNumber(phoneNo);
                     }
-                    mobileArray.add(contact);
+                    contactList.add(contact);
                     pCur.close();
                 }
             }
@@ -120,7 +128,7 @@ public class ContactActivityController extends Controller implements ContactAdap
         if (cur != null) {
             cur.close();
         }
-        return mobileArray;
+        return contactList;
     }
 
     @Override
@@ -128,8 +136,7 @@ public class ContactActivityController extends Controller implements ContactAdap
         getRouter().pushController(RouterTransaction.with(
                 new ContactDetailController(mobileArray.get(position).getDisplayName(),
                         mobileArray.get(position).getPhoneNumber()))
-                .pushChangeHandler(new HorizontalChangeHandler())
-                .popChangeHandler(new HorizontalChangeHandler()));
-
+                .pushChangeHandler(new FadeChangeHandler())
+                .popChangeHandler(new FadeChangeHandler()));
     }
 }

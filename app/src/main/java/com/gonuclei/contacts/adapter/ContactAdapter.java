@@ -1,7 +1,6 @@
 package com.gonuclei.contacts.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,11 +24,11 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Contacts
     private List<Contact> contactList;
     private Context context;
     private ColorGenerator generator = ColorGenerator.MATERIAL;
-    private RecyclerViewClickListener mlisner;
+    private RecyclerViewClickListener mListener;
 
     public ContactAdapter(Context context, List<Contact> contactList, RecyclerViewClickListener recyclerViewClickListener) {
         this.context = context;
-        this.mlisner = recyclerViewClickListener;
+        this.mListener = recyclerViewClickListener;
         this.contactList = contactList;
     }
 
@@ -42,7 +41,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Contacts
     @Override
     public ContactsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_contact, parent, false);
-        return new ContactsViewHolder(itemView, mlisner);
+        return new ContactsViewHolder(itemView, mListener);
     }
 
     @Override
@@ -54,7 +53,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Contacts
         holder.mContactLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mlisner.onClick(v, position);
+                mListener.onClick(v, position);
             }
         });
     }
