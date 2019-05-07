@@ -24,7 +24,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Contacts
 
     private List<Contact> contactList;
     private Context context;
-    ColorGenerator generator = ColorGenerator.MATERIAL;
+    private ColorGenerator generator = ColorGenerator.MATERIAL;
     private RecyclerViewClickListener mlisner;
 
     public ContactAdapter(Context context, List<Contact> contactList, RecyclerViewClickListener recyclerViewClickListener) {
