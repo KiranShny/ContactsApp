@@ -71,6 +71,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/white"
             android:layout_marginTop="8dp"
+            android:textSize="14sp"
             android:layout_marginBottom="16dp"
             android:layout_below="@id/img_call_button"
             android:layout_centerHorizontal="true"
@@ -84,5 +85,6 @@
         android:id="@+id/tv_contact_detail_number"
         android:layout_width="wrap_content"
         android:layout_margin="16dp"
+        android:textColor="@color/white"
         android:layout_height="wrap_content" />
 </LinearLayout>
