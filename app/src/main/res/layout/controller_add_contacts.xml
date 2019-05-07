@@ -57,15 +57,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <EditText
-            android:backgroundTintMode="src_over"
+            android:id="@+id/et_name"
             android:inputType="text"
             android:textColor="@color/white"
             android:hint="@string/name_hint"
+            android:textColorHint="@color/white_light"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
         <EditText
+            android:id="@+id/et_number"
             android:inputType="number"
             android:hint="@string/phone_number_hint"
+            android:textColorHint="@color/white_light"
+            android:textColor="@color/white"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </LinearLayout>
