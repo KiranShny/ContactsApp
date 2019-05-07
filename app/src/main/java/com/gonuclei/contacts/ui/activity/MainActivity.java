@@ -1,6 +1,8 @@
-package com.gonuclei.contacts;
+package com.gonuclei.contacts.ui.activity;
 
 import android.os.Bundle;
+
+import com.gonuclei.contacts.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import androidx.appcompat.app.AppCompatActivity;
