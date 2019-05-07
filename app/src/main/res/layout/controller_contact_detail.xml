@@ -55,4 +55,34 @@
             android:background="@color/white"
             android:layout_height="0.2dp"/>
     </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:id="@+id/img_call_button"
+            android:layout_marginTop="16dp"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/ic_call_black_24dp"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/call_button_desc" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
+            android:layout_below="@id/img_call_button"
+            android:layout_centerHorizontal="true"
+            android:text="@string/call_placeholder"/>
+    </RelativeLayout>
+    <View
+        android:layout_width="match_parent"
+        android:background="@color/white"
+        android:layout_height="0.2dp"/>
+    <TextView
+        android:id="@+id/tv_contact_detail_number"
+        android:layout_width="wrap_content"
+        android:layout_margin="16dp"
+        android:layout_height="wrap_content" />
 </LinearLayout>
