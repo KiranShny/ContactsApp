@@ -6,4 +6,8 @@
     <string name="contact_picture_descripton">Contact Picture</string>
     <string name="call_button_desc">Call button</string>
     <string name="call_placeholder">Call</string>
+    <string name="name_hint">Name</string>
+    <string name="phone_number_hint">Phone Number</string>
+    <string name="create_contact_title">Create Contact</string>
+    <string name="save_button_text">Save</string>
 </resources>
