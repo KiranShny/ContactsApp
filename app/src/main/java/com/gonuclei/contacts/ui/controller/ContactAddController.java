@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.ContentProvider;
 import android.content.ContentProviderOperation;
 import android.provider.ContactsContract;
+import android.text.Editable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,22 +38,32 @@ public class ContactAddController extends Controller {
         mBackButton = view.findViewById(R.id.img_clear_button);
         mSaveTextView = view.findViewById(R.id.tv_save_btn);
         requestPermission();
-        mSaveTextView.setOnClickListener(new View.OnClickListener() {
-
+        mBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ArrayList<ContentProviderOperation> ops = new ArrayList<>();
-                ops.add(ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI).withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, null).withValue(ContactsContract.RawContacts.ACCOUNT_NAME, null).build());
+                getRouter().popToRoot();
+            }
+        });
+        mSaveTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Editable name = mNameEditText.getText();
+                Editable phone = mNumberEditText.getText();
 
-                ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI).withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0).withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE).withValue(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME,mNameEditText.getText().toString()).build());
+                if (name != null && phone != null && !phone.toString().equals("") && !name.toString().equals("")) {
+                    ArrayList<ContentProviderOperation> ops = new ArrayList<>();
+                    ops.add(ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI).withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, null).withValue(ContactsContract.RawContacts.ACCOUNT_NAME, null).build());
 
-                ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI).withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0).withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE).withValue(ContactsContract.CommonDataKinds.Phone.NUMBER,mNumberEditText.getText().toString()).withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE).build());
-                try {
-                    getActivity().getContentResolver().applyBatch(ContactsContract.AUTHORITY, ops);
+                    ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI).withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0).withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE).withValue(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME,mNameEditText.getText().toString()).build());
 
-                } catch (Exception e) {
-                    Log.e(TAG, "onClick: "+"Error Occoured" );
-                    e.printStackTrace();
+                    ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI).withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0).withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE).withValue(ContactsContract.CommonDataKinds.Phone.NUMBER,mNumberEditText.getText().toString()).withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE).build());
+                    try {
+                        getActivity().getContentResolver().applyBatch(ContactsContract.AUTHORITY, ops);
+                        getRouter().popToRoot();
+                    } catch (Exception e) {
+                        Log.e(TAG, "onClick: "+"Error Occoured" );
+                        e.printStackTrace();
+                    }
                 }
             }
         });
