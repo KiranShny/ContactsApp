@@ -25,21 +25,28 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Contacts
     private List<Contact> contactList;
     private Context context;
     ColorGenerator generator = ColorGenerator.MATERIAL;
+    private RecyclerViewClickListener mlisner;
 
-    public ContactAdapter(Context context, List<Contact> contactList) {
+    public ContactAdapter(Context context, List<Contact> contactList, RecyclerViewClickListener recyclerViewClickListener) {
         this.context = context;
+        this.mlisner = recyclerViewClickListener;
         this.contactList = contactList;
+    }
+
+    public interface RecyclerViewClickListener {
+
+        void onClick(View view, int position);
     }
 
     @NonNull
     @Override
     public ContactsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_contact, parent, false);
-        return new ContactsViewHolder(itemView);
+        return new ContactsViewHolder(itemView, mlisner);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ContactsViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final ContactsViewHolder holder, final int position) {
         holder.mContactNameView.setText(contactList.get(position).getDisplayName());
         TextDrawable drawable = TextDrawable.builder()
                 .buildRound(contactList.get(position).getDisplayName().substring(0,1), generator.getRandomColor());
@@ -47,7 +54,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Contacts
         holder.mContactLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //transition to detail Controller
+                mlisner.onClick(v, position);
             }
         });
     }
@@ -57,16 +64,25 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Contacts
         return contactList.size();
     }
 
-    class ContactsViewHolder extends RecyclerView.ViewHolder {
+    class ContactsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
+        private RecyclerViewClickListener mListener;
         ImageView mContactImageView;
         TextView mContactNameView;
         LinearLayout mContactLayout;
 
-        ContactsViewHolder(@NonNull View itemView) {
+        ContactsViewHolder(@NonNull View itemView, RecyclerViewClickListener recyclerViewClickListener) {
             super(itemView);
+            mListener = recyclerViewClickListener;
             mContactImageView = itemView.findViewById(R.id.img_contact_picture);
             mContactNameView = itemView.findViewById(R.id.tv_contact_name);
             mContactLayout = itemView.findViewById(R.id.layout_contact);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            mListener.onClick(v, getAdapterPosition());
         }
     }
 }

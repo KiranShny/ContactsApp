@@ -7,6 +7,7 @@ import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -14,6 +15,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bluelinelabs.conductor.Controller;
+import com.bluelinelabs.conductor.RouterTransaction;
+import com.bluelinelabs.conductor.changehandler.HorizontalChangeHandler;
 import com.gonuclei.contacts.R;
 import com.gonuclei.contacts.adapter.ContactAdapter;
 import com.gonuclei.contacts.model.Contact;
@@ -22,7 +25,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ContactActivityController extends Controller {
+public class ContactActivityController extends Controller implements ContactAdapter.RecyclerViewClickListener {
     private static final int REQUEST_READ_CONTACTS = 79;
     private List<Contact> mobileArray;
 
@@ -48,7 +51,7 @@ public class ContactActivityController extends Controller {
 
         RecyclerView contactsRecyclerView = view.findViewById(R.id.rv_contacts);
         contactsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        contactsRecyclerView.setAdapter(new ContactAdapter(getActivity(), mobileArray));
+        contactsRecyclerView.setAdapter(new ContactAdapter(getActivity(), mobileArray, this));
 
         return view;
     }
@@ -86,7 +89,7 @@ public class ContactActivityController extends Controller {
     }
 
     private List<Contact> getAllContacts() {
-        List<Contact> contactList = new ArrayList<>();
+         mobileArray=new ArrayList<>();
         ContentResolver cr = getApplicationContext().getContentResolver();
         Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI,
                 null, null, null, null);
@@ -98,7 +101,7 @@ public class ContactActivityController extends Controller {
                         ContactsContract.Contacts.DISPLAY_NAME));
                 Contact contact = new Contact();
                 contact.setDisplayName(name);
-                contactList.add(contact);
+
                 if (cur.getInt(cur.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)) > 0) {
                     Cursor pCur = cr.query(
                             ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
@@ -108,7 +111,9 @@ public class ContactActivityController extends Controller {
                     while (pCur.moveToNext()) {
                         String phoneNo = pCur.getString(pCur.getColumnIndex(
                                 ContactsContract.CommonDataKinds.Phone.NUMBER));
+                        contact.setPhoneNumber(phoneNo);
                     }
+                    mobileArray.add(contact);
                     pCur.close();
                 }
             }
@@ -116,7 +121,16 @@ public class ContactActivityController extends Controller {
         if (cur != null) {
             cur.close();
         }
-        return contactList;
+        return mobileArray;
     }
 
+    @Override
+    public void onClick(View view, int position) {
+        getRouter().pushController(RouterTransaction.with(
+                new ContactDetailController(mobileArray.get(position).getDisplayName(),
+                        mobileArray.get(position).getPhoneNumber()))
+                .pushChangeHandler(new HorizontalChangeHandler())
+                .popChangeHandler(new HorizontalChangeHandler()));
+
+    }
 }
