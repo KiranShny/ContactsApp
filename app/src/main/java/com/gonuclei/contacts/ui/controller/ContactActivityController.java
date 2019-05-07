@@ -85,7 +85,13 @@ public class ContactActivityController extends Controller implements ContactAdap
         switch (requestCode) {
             case REQUEST_READ_CONTACTS: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    mobileArray = getAllContacts();
+                    Runnable runnable = new Runnable() {
+                        @Override
+                        public void run() {
+                            mobileArray = getAllContacts();
+                        }
+                    };
+                    runnable.run();
                 } else {
                     // permission denied,Disable the
                     // functionality that depends on this permission.
@@ -95,39 +101,37 @@ public class ContactActivityController extends Controller implements ContactAdap
         }
     }
 
+    private static final String[] PROJECTION = new String[]{
+            ContactsContract.CommonDataKinds.Phone.CONTACT_ID,
+            ContactsContract.Contacts.DISPLAY_NAME,
+            ContactsContract.CommonDataKinds.Phone.NUMBER
+    };
+
+
     private List<Contact> getAllContacts() {
         List<Contact> contactList = new ArrayList<>();
         ContentResolver cr = getApplicationContext().getContentResolver();
-        Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI,
-                null, null, null, null);
-        if ((cur != null ? cur.getCount() : 0) > 0) {
-            while (cur != null && cur.moveToNext()) {
-                String id = cur.getString(
-                        cur.getColumnIndex(ContactsContract.Contacts._ID));
-                String name = cur.getString(cur.getColumnIndex(
-                        ContactsContract.Contacts.DISPLAY_NAME));
-                Contact contact = new Contact();
-                contact.setDisplayName(name);
+        Cursor cursor = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, PROJECTION, null, null, null);
+        if (cursor != null) {
+            try {
+                final int nameIndex = cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME);
+                final int numberIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
 
-                if (cur.getInt(cur.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)) > 0) {
-                    Cursor pCur = cr.query(
-                            ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                            null,
-                            ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
-                            new String[]{id}, null);
-                    while (pCur.moveToNext()) {
-                        String phoneNo = pCur.getString(pCur.getColumnIndex(
-                                ContactsContract.CommonDataKinds.Phone.NUMBER));
-                        contact.setPhoneNumber(phoneNo);
-                    }
+                String name="", number="";
+
+                while (cursor.moveToNext()) {
+                     Contact contact=new Contact();
+                    name = cursor.getString(nameIndex);
+                    number = cursor.getString(numberIndex);
+                    contact.setDisplayName(name);
+                    contact.setPhoneNumber(number);
                     contactList.add(contact);
-                    pCur.close();
                 }
+            } finally {
+                cursor.close();
             }
         }
-        if (cur != null) {
-            cur.close();
-        }
+
         return contactList;
     }
 
