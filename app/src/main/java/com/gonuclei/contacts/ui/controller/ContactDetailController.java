@@ -31,14 +31,13 @@ import com.gonuclei.contacts.R;
 import com.gonuclei.contacts.utils.BundleBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 public class ContactDetailController extends Controller {
     private static final String KEY_NAME = "CityDetailController.title";
     private static final String KEY_PHONE = "CityDetailController.phone";
     private static final int REQUEST_READ_CONTACTS = 222;
-    private TextView name, phone;
+    private TextView name, phone, email;
     private ImageView mContactPicture;
     private RelativeLayout mCallLayout;
     private ImageView backImage;
@@ -66,6 +65,7 @@ public class ContactDetailController extends Controller {
         name = view.findViewById(R.id.tv_contact_detail_name);
         mContactPicture = view.findViewById(R.id.img_contact_detail_picture);
         phone = view.findViewById(R.id.tv_contact_detail_number);
+        email = view.findViewById(R.id.contact_detail_email);
         mCallLayout = view.findViewById(R.id.layout_call_button);
         requestPermission();
 
@@ -90,6 +90,7 @@ public class ContactDetailController extends Controller {
             }
         });
         phone.setText(phoneNumber);
+        email.setText(getNameEmailDetails(phoneNumber));
 
         mCallLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -107,6 +108,39 @@ public class ContactDetailController extends Controller {
             }
         });
         return view;
+    }
+
+    public String getNameEmailDetails(String number) {
+        ContentResolver contentResolver = getApplicationContext().getContentResolver();
+        String contactId = null;
+        String email="";
+        Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(number));
+        String[] projection = new String[]{ContactsContract.PhoneLookup.DISPLAY_NAME, ContactsContract.PhoneLookup._ID};
+
+        Cursor cursor =
+                contentResolver.query(
+                        uri,
+                        projection,
+                        null,
+                        null,
+                        null);
+
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                contactId = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.PhoneLookup._ID));
+            }
+            cursor.close();
+        }
+        String filter = ContactsContract.CommonDataKinds.Email.DATA + " NOT LIKE ''";
+        ContentResolver cr = getApplicationContext().getContentResolver();
+        Cursor cur = cr.query(ContactsContract.CommonDataKinds.Email.CONTENT_URI, null, ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = " + contactId, null, null);
+        if(cur!=null) {
+            while (cur.moveToNext()) {
+                 email =cur.getString(cur.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
+            }
+            cur.close();
+        }
+        return email;
     }
 
     private void requestPermission() {

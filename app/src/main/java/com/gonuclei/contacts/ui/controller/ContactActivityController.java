@@ -107,6 +107,7 @@ public class ContactActivityController extends Controller implements ContactAdap
             ContactsContract.Contacts.DISPLAY_NAME,
             ContactsContract.CommonDataKinds.Phone.NUMBER,
             ContactsContract.CommonDataKinds.Phone.PHOTO_URI,
+            ContactsContract.CommonDataKinds.Email.DATA,
     };
 
 
