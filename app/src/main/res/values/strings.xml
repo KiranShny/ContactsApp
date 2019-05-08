@@ -10,4 +10,9 @@
     <string name="phone_number_hint">Phone Number</string>
     <string name="create_contact_title">Create Contact</string>
     <string name="save_button_text">Save</string>
+    <string name="email_hint">Email</string>
+    <string name="email_photo_desc">email photo</string>
+    <string name="phone_number_desc">phone number</string>
+    <string name="name_desc">name</string>
+    <string name="add_photo_placeholder">add photo placeholder</string>
 </resources>

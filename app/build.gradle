@@ -30,4 +30,7 @@ dependencies {
     implementation 'com.bluelinelabs:conductor:3.0.0-rc1'
 
     implementation 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
+
+    implementation 'com.github.mkhytarmkhoian:conductor-dialog:1.0.0'
+
 }

@@ -1,8 +1,8 @@
 package com.gonuclei.contacts.ui.controller;
 
 import android.Manifest;
-import android.content.ContentProvider;
 import android.content.ContentProviderOperation;
+import android.graphics.drawable.Drawable;
 import android.provider.ContactsContract;
 import android.text.Editable;
 import android.util.Log;
@@ -25,8 +25,10 @@ public class ContactAddController extends Controller {
     private static final int REQUEST_READ_CONTACTS = 763;
     private EditText mNameEditText;
     private EditText mNumberEditText;
+    private EditText mEmailEditText;
     private ImageView mBackButton;
     private TextView mSaveTextView;
+    private ImageView mAddPhotoImageView;
     private static final String TAG = "ContactAddController";
 
     @NonNull
@@ -35,8 +37,14 @@ public class ContactAddController extends Controller {
         View view = inflater.inflate(R.layout.controller_add_contacts, container, false);
         mNameEditText = view.findViewById(R.id.et_name);
         mNumberEditText = view.findViewById(R.id.et_number);
+        mEmailEditText = view.findViewById(R.id.et_email);
+        mAddPhotoImageView = view.findViewById(R.id.img_add_photo);
         mBackButton = view.findViewById(R.id.img_clear_button);
         mSaveTextView = view.findViewById(R.id.tv_save_btn);
+
+        Drawable drawable = getApplicationContext().getDrawable(R.drawable.ic_add_a_photo_black_24dp);
+
+
         requestPermission();
         mBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -49,12 +57,15 @@ public class ContactAddController extends Controller {
             public void onClick(View v) {
                 Editable name = mNameEditText.getText();
                 Editable phone = mNumberEditText.getText();
+                Editable email = mEmailEditText.getText();
 
-                if (name != null && phone != null && !phone.toString().equals("") && !name.toString().equals("")) {
+                if (name != null && phone != null && email != null && !email.toString().equals("") && !phone.toString().equals("") && !name.toString().equals("")) {
                     ArrayList<ContentProviderOperation> ops = new ArrayList<>();
                     ops.add(ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI).withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, null).withValue(ContactsContract.RawContacts.ACCOUNT_NAME, null).build());
 
                     ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI).withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0).withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE).withValue(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME,mNameEditText.getText().toString()).build());
+
+                    ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI).withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0).withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE).withValue(ContactsContract.CommonDataKinds.Email.ADDRESS, mEmailEditText.getText().toString()).withValue(ContactsContract.CommonDataKinds.Email.TYPE, ContactsContract.CommonDataKinds.Email.ADDRESS).build());
 
                     ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI).withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0).withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE).withValue(ContactsContract.CommonDataKinds.Phone.NUMBER,mNumberEditText.getText().toString()).withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE).build());
                     try {

@@ -23,7 +23,10 @@
                 android:src="@drawable/ic_clear_black_24dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp"
+                android:paddingStart="8dp"
+                android:paddingTop="16dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="16dp"
                 android:contentDescription="@string/back_button_placeholder" />
             <RelativeLayout
                 android:layout_height="match_parent"
@@ -35,7 +38,6 @@
                     android:textColor="@color/white"
                     android:layout_centerVertical="true"
                     android:textSize="20sp"
-                    android:layout_marginStart="16dp"
                     android:text="@string/create_contact_title" />
                 <TextView
                     android:id="@+id/tv_save_btn"
@@ -51,26 +53,111 @@
             </RelativeLayout>
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_margin="16dp"
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <EditText
-            android:id="@+id/et_name"
-            android:inputType="text"
-            android:textColor="@color/white"
-            android:hint="@string/name_hint"
-            android:textColorHint="@color/white_light"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/img_add_photo"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/circle"
+            android:contentDescription="@string/add_photo_placeholder"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_add_a_photo_black_24dp"
+            app:layout_constraintBottom_toTopOf="@+id/layout_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/layout_name"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        <EditText
-            android:id="@+id/et_number"
-            android:inputType="number"
-            android:hint="@string/phone_number_hint"
-            android:textColorHint="@color/white_light"
-            android:textColor="@color/white"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/img_add_photo">
+
+            <ImageView
+                android:id="@+id/img_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:contentDescription="@string/name_desc"
+                android:src="@drawable/ic_person_outline_black_24dp"
+                app:layout_constraintEnd_toStartOf="@id/et_name"
+                app:layout_constraintTop_toBottomOf="@id/img_add_photo" />
+
+            <EditText
+                android:id="@+id/et_name"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/name_hint"
+                android:inputType="text"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white_light"
+                app:layout_constraintStart_toEndOf="@id/img_name"
+                app:layout_constraintTop_toBottomOf="@id/img_add_photo" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_number"
+            android:layout_height="wrap_content"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
+            app:layout_constraintTop_toBottomOf="@id/layout_name">
+
+            <ImageView
+                android:id="@+id/img_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:contentDescription="@string/phone_number_desc"
+                android:src="@drawable/ic_call_black_24dp"
+                app:layout_constraintEnd_toStartOf="@id/et_name"
+                app:layout_constraintTop_toBottomOf="@id/img_add_photo" />
+
+            <EditText
+                android:id="@+id/et_number"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/phone_number_hint"
+                android:inputType="number"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white_light"
+                app:layout_constraintTop_toBottomOf="@id/layout_name" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            app:layout_constraintTop_toBottomOf="@id/layout_number">
+
+            <ImageView
+                android:id="@+id/img_mail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:contentDescription="@string/email_photo_desc"
+                android:src="@drawable/ic_mail_outline_black_24dp"
+                app:layout_constraintEnd_toStartOf="@id/et_name"
+                app:layout_constraintTop_toBottomOf="@id/img_add_photo" />
+
+            <EditText
+                android:id="@+id/et_email"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/email_hint"
+                android:inputType="textEmailAddress"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white_light"
+                app:layout_constraintTop_toBottomOf="@id/et_number" />
+
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </LinearLayout>

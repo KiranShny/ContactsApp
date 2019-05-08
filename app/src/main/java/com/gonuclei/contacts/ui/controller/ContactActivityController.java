@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bluelinelabs.conductor.Controller;
 import com.bluelinelabs.conductor.RouterTransaction;
-import com.bluelinelabs.conductor.changehandler.FadeChangeHandler;
 import com.bluelinelabs.conductor.changehandler.HorizontalChangeHandler;
 import com.bluelinelabs.conductor.changehandler.VerticalChangeHandler;
 import com.gonuclei.contacts.R;
@@ -120,10 +119,10 @@ public class ContactActivityController extends Controller implements ContactAdap
                 final int nameIndex = cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME);
                 final int numberIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
 
-                String name="", number="";
+                String name = "", number = "";
 
                 while (cursor.moveToNext()) {
-                     Contact contact=new Contact();
+                    Contact contact = new Contact();
                     name = cursor.getString(nameIndex);
                     number = cursor.getString(numberIndex);
                     contact.setDisplayName(name);
