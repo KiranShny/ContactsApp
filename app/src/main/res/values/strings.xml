@@ -15,4 +15,9 @@
     <string name="phone_number_desc">phone number</string>
     <string name="name_desc">name</string>
     <string name="add_photo_placeholder">add photo placeholder</string>
+    <string name="default_phone_number">+9188888888888</string>
+    <string name="phone_symbol_desc">Phone symbol</string>
+    <string name="phone_text">Phone</string>
+    <string name="default_email">john@doe.com</string>
+    <string name="email_text">Email</string>
 </resources>

@@ -2,7 +2,6 @@ package com.gonuclei.contacts.ui.controller;
 
 import android.Manifest;
 import android.content.ContentProviderOperation;
-import android.graphics.drawable.Drawable;
 import android.provider.ContactsContract;
 import android.text.Editable;
 import android.util.Log;
@@ -41,9 +40,6 @@ public class ContactAddController extends Controller {
         mAddPhotoImageView = view.findViewById(R.id.img_add_photo);
         mBackButton = view.findViewById(R.id.img_clear_button);
         mSaveTextView = view.findViewById(R.id.tv_save_btn);
-
-        Drawable drawable = getApplicationContext().getDrawable(R.drawable.ic_add_a_photo_black_24dp);
-
 
         requestPermission();
         mBackButton.setOnClickListener(new View.OnClickListener() {
