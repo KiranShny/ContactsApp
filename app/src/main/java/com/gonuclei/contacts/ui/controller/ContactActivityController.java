@@ -16,6 +16,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bluelinelabs.conductor.Controller;
 import com.bluelinelabs.conductor.RouterTransaction;
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler;
+import com.bluelinelabs.conductor.changehandler.HorizontalChangeHandler;
+import com.bluelinelabs.conductor.changehandler.VerticalChangeHandler;
 import com.gonuclei.contacts.R;
 import com.gonuclei.contacts.adapter.ContactAdapter;
 import com.gonuclei.contacts.model.Contact;
@@ -39,8 +41,8 @@ public class ContactActivityController extends Controller implements ContactAdap
             public void onClick(View view) {
                 getRouter().pushController(RouterTransaction.with(
                         new ContactAddController())
-                        .pushChangeHandler(new FadeChangeHandler())
-                        .popChangeHandler(new FadeChangeHandler()));
+                        .pushChangeHandler(new VerticalChangeHandler())
+                        .popChangeHandler(new VerticalChangeHandler()));
             }
         });
 
@@ -104,7 +106,8 @@ public class ContactActivityController extends Controller implements ContactAdap
     private static final String[] PROJECTION = new String[]{
             ContactsContract.CommonDataKinds.Phone.CONTACT_ID,
             ContactsContract.Contacts.DISPLAY_NAME,
-            ContactsContract.CommonDataKinds.Phone.NUMBER
+            ContactsContract.CommonDataKinds.Phone.NUMBER,
+            ContactsContract.CommonDataKinds.Phone.PHOTO_URI,
     };
 
 
@@ -140,7 +143,7 @@ public class ContactActivityController extends Controller implements ContactAdap
         getRouter().pushController(RouterTransaction.with(
                 new ContactDetailController(mobileArray.get(position).getDisplayName(),
                         mobileArray.get(position).getPhoneNumber()))
-                .pushChangeHandler(new FadeChangeHandler())
-                .popChangeHandler(new FadeChangeHandler()));
+                .pushChangeHandler(new HorizontalChangeHandler())
+                .popChangeHandler(new HorizontalChangeHandler()));
     }
 }

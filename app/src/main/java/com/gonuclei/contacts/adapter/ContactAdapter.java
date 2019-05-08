@@ -1,6 +1,13 @@
 package com.gonuclei.contacts.adapter;
 
+import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +23,8 @@ import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.gonuclei.contacts.R;
 import com.gonuclei.contacts.model.Contact;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 

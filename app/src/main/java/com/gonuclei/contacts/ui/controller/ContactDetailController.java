@@ -1,10 +1,17 @@
 package com.gonuclei.contacts.ui.controller;
 
 import android.Manifest;
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +21,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+import androidx.core.graphics.drawable.RoundedBitmapDrawable;
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
@@ -21,6 +30,9 @@ import com.bluelinelabs.conductor.Controller;
 import com.gonuclei.contacts.R;
 import com.gonuclei.contacts.utils.BundleBuilder;
 import com.google.android.material.snackbar.Snackbar;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 public class ContactDetailController extends Controller {
     private static final String KEY_NAME = "CityDetailController.title";
@@ -43,8 +55,8 @@ public class ContactDetailController extends Controller {
 
     public ContactDetailController(Bundle args) {
         super(args);
-        displayName= getArgs().getString(KEY_NAME);
-        phoneNumber= getArgs().getString(KEY_PHONE);
+        displayName = getArgs().getString(KEY_NAME);
+        phoneNumber = getArgs().getString(KEY_PHONE);
     }
 
     @NonNull
@@ -56,15 +68,27 @@ public class ContactDetailController extends Controller {
         phone = view.findViewById(R.id.tv_contact_detail_number);
         mCallLayout = view.findViewById(R.id.layout_call_button);
         requestPermission();
-        ColorGenerator generator = ColorGenerator.MATERIAL;
-        TextDrawable drawable = TextDrawable.builder()
-                .buildRound(displayName.substring(0,1), generator.getRandomColor());
-        mContactPicture.setImageDrawable(drawable);
+
+        Bitmap bitmap = retrieveContactPhoto(getApplicationContext(), phoneNumber);
+        if (bitmap != null) {
+            RoundedBitmapDrawable drawable =
+                    RoundedBitmapDrawableFactory.create(getApplicationContext().getResources(), bitmap);
+            drawable.setCircular(true);
+            mContactPicture.setImageDrawable(drawable);
+        } else {
+            mContactPicture.setImageDrawable(getDrawable());
+        }
 
         TextView name = view.findViewById(R.id.tv_contact_detail_name);
         TextView phone = view.findViewById(R.id.tv_contact_detail_number);
-        backImage=view.findViewById(R.id.img_back_button);
+        backImage = view.findViewById(R.id.img_back_button);
         name.setText(displayName);
+        name.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                shareContact();
+            }
+        });
         phone.setText(phoneNumber);
 
         mCallLayout.setOnClickListener(new View.OnClickListener() {
@@ -102,7 +126,7 @@ public class ContactDetailController extends Controller {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull
-                                           String[] permissions, @NonNull int[] grantResults) {
+            String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_READ_CONTACTS) {
             if (grantResults.length <= 0 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                 mCallLayout.setOnClickListener(new View.OnClickListener() {
@@ -116,5 +140,62 @@ public class ContactDetailController extends Controller {
         }
     }
 
+    private Bitmap retrieveContactPhoto(Context context, String number) {
+        ContentResolver contentResolver = context.getContentResolver();
+        String contactId = null;
+        Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(number));
+        String[] projection = new String[]{ContactsContract.PhoneLookup.DISPLAY_NAME, ContactsContract.PhoneLookup._ID};
+
+        Cursor cursor =
+                contentResolver.query(
+                        uri,
+                        projection,
+                        null,
+                        null,
+                        null);
+
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                contactId = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.PhoneLookup._ID));
+            }
+            cursor.close();
+        }
+
+        Bitmap photo = BitmapFactory.decodeResource(context.getResources(),
+                R.drawable.ic_launcher_background);
+
+        InputStream inputStream = ContactsContract.Contacts.openContactPhotoInputStream(context.getContentResolver(),
+                ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, Long.valueOf(contactId)));
+
+        if (inputStream != null) {
+            photo = BitmapFactory.decodeStream(inputStream);
+        }
+
+        return photo;
+    }
+
+    private TextDrawable getDrawable() {
+        ColorGenerator generator = ColorGenerator.MATERIAL;
+        TextDrawable drawable = TextDrawable.builder()
+                .buildRound(displayName.substring(0, 1), generator.getRandomColor());
+        return drawable;
+    }
+
+
+    public void shareContact() {
+        Cursor cur = getApplicationContext().getContentResolver().
+                query(ContactsContract.Contacts.CONTENT_URI,
+                        new String[]{ContactsContract.Contacts.LOOKUP_KEY},
+                        ContactsContract.Contacts._ID, null, null);
+        if (cur.moveToFirst()) {
+            String lookupKey = cur.getString(0);
+            Uri vcardUri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_VCARD_URI, lookupKey);
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType(ContactsContract.Contacts.CONTENT_VCARD_TYPE);
+            intent.putExtra(Intent.EXTRA_STREAM, vcardUri);
+            intent.putExtra(Intent.EXTRA_SUBJECT, "Bob Dylan"); // put the name of the contact here
+            startActivity(intent);
+        }
+    }
 
 }
